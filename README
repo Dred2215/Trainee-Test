@@ -1,0 +1,108 @@
+# Amazon Scraper
+
+A lightweight web application that scrapes Amazon’s first page of search results for a given keyword and displays each product’s title, star rating, number of reviews and thumbnail in a clean, responsive interface.
+
+**Repository**  
+<https://github.com/Dred2215/Trainee-Test.git>
+
+---
+
+🚀 Features
+
+- **Live search**: enter any term and see real-time results from Amazon.
+- **Product cards**: display title, rating, reviews and image.
+- **Responsive layout**: grid of cards adjusts to any screen size.
+- **Fast backend**: powered by Bun + Express + Axios + JSDOM — no headless-browser overhead.
+- **Dev proxy**: Vite proxies `/api` calls to avoid CORS.
+- **Error handling**: user-friendly messages on network or parsing errors.
+
+---
+
+🏗️ Architecture & Logic
+
+# Backend (Bun + Express)
+
+1. **Server**  
+   - Express serving HTTP routes  
+   - CORS enabled for cross-origin requests from the frontend
+
+2. **Scraping**  
+   - **Axios** fetches `https://www.amazon.com/s?k=<keyword>` with a real-browser User-Agent  
+   - **JSDOM** parses the HTML into a `document`  
+   - Selects `div[role="listitem"][data-component-type="s-search-result"]` for each product  
+   - Extracts:
+     - **Title**: text inside `<span>` or `aria-label` on `<h2>`  
+     - **Rating**: first token of `.a-icon-alt` (e.g. “4.5”)  
+     - **Reviews**: numeric text in `span.a-size-base.s-underline-text`, stripped of punctuation  
+     - **Image**: `src` of `img.s-image`  
+   - Returns an array of `{ title, rating, reviews, image }`
+
+3. **API routes**  
+   - `GET /api/scrape?keyword=<term>` → array of product objects  
+   - (Optional) `GET /api/count?keyword=<term>` → `{ count: <number> }`
+
+# Frontend (Vite + Vanilla JS)
+
+1. **Vite config**  
+   - Proxies `/api` → `http://localhost:3000` to bypass CORS during development
+
+2. **Modules**  
+   - `src/api.js`: `fetchResults(keyword)` wraps `fetch('/api/scrape?...')`  
+   - `src/components/productCard.js`: `createProductCard(item)` builds each card element  
+   - `src/main.js`: orchestrates input → fetch → render  
+
+3. **Styles**  
+   - Amazon-inspired palette (blue header, yellow buttons)  
+   - Responsive grid, hover/focus states, loading spinner
+
+---
+
+🛠️ Prerequisites
+
+- **Bun** (backend): install via PowerShell or shell script:  
+  ```bash
+  # Windows PowerShell (Admin):
+  iwr https://bun.sh/install.ps1 -UseBasicParsing | iex
+
+
+- Node.js & npm (frontend): LTS version recommended
+
+- Modern browser (Chrome, Firefox, Edge, Safari)
+
+
+📥 Installation & Setup
+
+# 1. Clone the repo
+git clone https://github.com/Dred2215/Trainee-Test.git
+cd Trainee-Test
+
+
+Backend
+cd backend
+
+# Initialize Bun + install dependencies
+bun init --yes     # if package.json doesn’t exist yet
+bun install express axios jsdom cors
+
+# (Optional) add to package.json scripts:
+# "start": "bun index.js"
+
+# Run the server
+bun index.js
+
+
+
+Frontend
+cd frontend
+
+# Install node modules
+npm install
+
+# Start Vite dev server
+npm run dev
+
+
+
+
+
+

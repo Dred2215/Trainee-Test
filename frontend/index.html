@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!--
+    Summary:
+    - Renders the app’s header with its title.
+    - Provides a search section: an input + button for user keywords.
+    - Hosts a results container where product cards will be injected.
+    - Loads the main JavaScript module to drive interaction.
+  -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Amazon Scraper</title>
+    <!-- Link to global stylesheet -->
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <!-- App header -->
+    <header class="site-header">
+      <div class="site-header__inner">
+        <h1>Amazon Scraper</h1>
+      </div>
+    </header>
+
+    <!-- Main content area -->
+    <main class="container">
+      <!-- Search controls: input field + button -->
+      <section class="search">
+        <!-- Text input for entering the keyword -->
+        <input
+          id="keyword"
+          class="search__input"
+          type="text"
+          placeholder="Enter search keyword"
+        />
+        <!-- Button to trigger the scrape -->
+        <button id="scrapeBtn" class="search__button">
+          Search
+        </button>
+      </section>
+
+      <!-- Results section: cards will be appended here -->
+      <section id="results" class="results"></section>
+    </main>
+
+    <!-- Main JavaScript module that handles fetch + render logic -->
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
