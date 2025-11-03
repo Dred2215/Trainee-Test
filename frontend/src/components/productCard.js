@@ -1,48 +1,56 @@
 /**
  * Summary:
- * 1. Receive a product object with title, rating, reviews, and image URL.
- * 2. Create a container <div> and apply the "card" CSS class.
- * 3. Populate the container’s innerHTML with:
- *    - An <img> showing the product thumbnail.
- *    - A nested <div> for text content.
- *    - A <h3> for the product title.
- *    - Two <p> elements for the rating and review count (with sensible fallbacks).
- * 4. Return the fully assembled HTMLElement for insertion into the DOM.
+ * 1. Recebe um produto com título, preço, avaliação, reviews e imagem.
+ * 2. Monta um <article> com foto, selo de avaliação, preço e metadados.
+ * 3. Normaliza contagem de reviews para o padrão pt-BR (ex.: 12.530).
+ * 4. Retorna o card pronto para renderização na grid de resultados.
  *
- * @param {{ title: string, rating: string, reviews: string, image: string }} item
- *   — Object containing the product’s details.
+ * @param {{ title: string, price: string|null, rating: string|null, reviews: string|null, image: string|null }} item
  * @returns {HTMLElement}
- *   — A DOM element representing the product card.
  */
+const numberFormatter = new Intl.NumberFormat('pt-BR')
+
 export function createProductCard(item) {
-  // 2. Create the outer container for the card
-  const card = document.createElement('div') // <div> that will hold image and content
-  card.className = 'card'                     // apply the CSS class for card styling
+  const card = document.createElement('article')
+  card.className = 'card'
 
-  // 3. Build the card’s internal HTML structure using a template literal
-  card.innerHTML = `
-    <!-- Product thumbnail -->
-    <img 
-      src="${item.image}" 
-      alt="${item.title}" 
-      class="card__image"
-    />
-
-    <!-- Container for text details -->
-    <div class="card-content">
-      <!-- Product title -->
-      <h3 class="card-content__title">${item.title}</h3>
-      <!-- Product rating, or "N/A" if missing -->
-      <p class="card-content__rating">
-        Rating: ${item.rating || 'N/A'}
-      </p>
-      <!-- Number of reviews, or "0" if missing -->
-      <p class="card-content__reviews">
-        Reviews: ${item.reviews || '0'}
-      </p>
+  const reviewsNumber = Number(item.reviews || 0)
+  const reviewsDisplay = reviewsNumber ? numberFormatter.format(reviewsNumber) : '0'
+  const ratingDisplay = item.rating || '—'
+  const hasPrice = Boolean(item.price)
+  const priceValue = hasPrice ? item.price : 'Indisponível'
+  const priceMarkup = `
+    <div class="card__price${hasPrice ? '' : ' card__price--muted'}">
+      <span class="card__price-label">Preço</span>
+      <span class="card__price-value">${priceValue}</span>
     </div>
-  ` // end of template string
+  `
 
-  // 4. Return the assembled card element
+  card.innerHTML = `
+    <div class="card__image-wrapper">
+      <img
+        src="${item.image || ''}"
+        alt="${item.title}"
+        loading="lazy"
+      />
+      ${item.rating ? `<span class="card__badge">⭐ ${item.rating}</span>` : ''}
+    </div>
+
+    <div class="card__body">
+      ${priceMarkup}
+      <h3 class="card__title">${item.title}</h3>
+      <div class="card__meta">
+        <div class="card__meta-item">
+          <span class="card__meta-label">Avaliação</span>
+          <span class="card__meta-value">${ratingDisplay}</span>
+        </div>
+        <div class="card__meta-item">
+          <span class="card__meta-label">Reviews</span>
+          <span class="card__meta-value">${reviewsDisplay}</span>
+        </div>
+      </div>
+    </div>
+  `
+
   return card
 }

@@ -9,7 +9,7 @@
  * 5. Return the array of product objects to the caller.
  *
  * @param {string} keyword — the search term to query on Amazon
- * @returns {Promise<Array<{ title: string, rating: string, reviews: string, image: string }>>}
+ * @returns {Promise<Array<{ title: string, price: string|null, rating: string|null, reviews: string|null, image: string|null }>>}
  */
 export async function fetchResults(keyword) {
   // 1. Construct the URL, encoding the keyword to handle special characters

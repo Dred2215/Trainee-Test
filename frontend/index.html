@@ -1,49 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
   <!--
     Summary:
-    - Renders the app’s header with its title.
-    - Provides a search section: an input + button for user keywords.
-    - Hosts a results container where product cards will be injected.
-    - Loads the main JavaScript module to drive interaction.
+    - Apresenta um herói inspirado na Amazon com busca destacada.
+    - Mantém os pontos de integração para o backend (`keyword`, `scrapeBtn`, `results`).
+    - Adiciona sugestões rápidas, estado vazio e área informativa dos resultados.
+    - Carrega o módulo principal responsável por conectar o frontend ao scraper.
   -->
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Amazon Scraper</title>
-    <!-- Link to global stylesheet -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Amazon Finder</title>
     <link rel="stylesheet" href="/style.css" />
   </head>
-  <body>
-    <!-- App header -->
+  <body class="page">
     <header class="site-header">
       <div class="site-header__inner">
-        <h1>Amazon Scraper</h1>
+        <span class="site-header__badge">Buscador Amazon</span>
+        <h1>Encontre os produtos ideais na Amazon com rapidez</h1>
+        <p class="site-header__subtitle">
+          Compare avaliações e reviews sem sair da página. Digite um termo ou escolha uma sugestão abaixo.
+        </p>
+
+        <div class="search-card" role="search">
+          <div class="search-card__controls">
+            <label class="search-card__input-wrapper" for="keyword">
+              <svg class="search-card__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M15.5 14h-.79l-.28-.27a6 6 0 1 0-.71.71l.27.28v.79l5 4.99L20.49 19zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"
+                  fill="currentColor"
+                />
+              </svg>
+              <input
+                id="keyword"
+                class="search__input"
+                type="text"
+                placeholder="Ex.: Kindle Paperwhite, Echo Dot, monitor 4K"
+                autocomplete="off"
+              />
+            </label>
+            <button id="scrapeBtn" class="search__button" type="button">
+              Buscar
+            </button>
+          </div>
+
+          <div class="search-card__helpers">
+            <p class="search-card__helpers-title">Sugestões rápidas</p>
+            <div class="search-card__pills">
+              <button type="button" class="pill" data-suggestion="kindle paperwhite">Kindle</button>
+              <button type="button" class="pill" data-suggestion="headset bluetooth">Headsets</button>
+              <button type="button" class="pill" data-suggestion="smart tv 4k">Smart TVs</button>
+              <button type="button" class="pill" data-suggestion="teclado mecanico">Teclados</button>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
 
-    <!-- Main content area -->
-    <main class="container">
-      <!-- Search controls: input field + button -->
-      <section class="search">
-        <!-- Text input for entering the keyword -->
-        <input
-          id="keyword"
-          class="search__input"
-          type="text"
-          placeholder="Enter search keyword"
-        />
-        <!-- Button to trigger the scrape -->
-        <button id="scrapeBtn" class="search__button">
-          Search
-        </button>
-      </section>
+    <main class="page-main">
+      <section class="results-shell">
+        <header class="results-header">
+          <h2>Resultados</h2>
+          <p id="searchStatus" class="results-header__status" hidden></p>
+        </header>
 
-      <!-- Results section: cards will be appended here -->
-      <section id="results" class="results"></section>
+        <div id="resultsPlaceholder" class="results-placeholder" aria-live="polite">
+          <svg class="results-placeholder__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M16 14h-1l-.4-.4a6.5 6.5 0 1 0-.6.6l.4.4v1l5 5 1.5-1.5-5-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"
+              fill="currentColor"
+            />
+          </svg>
+          <h3>Pesquise por um produto</h3>
+          <p>Use palavras-chave específicas como &ldquo;smartphone 5G&rdquo; ou &ldquo;cadeira gamer ergonômica&rdquo;.</p>
+        </div>
+
+        <section id="results" class="results" aria-live="polite"></section>
+      </section>
     </main>
 
-    <!-- Main JavaScript module that handles fetch + render logic -->
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

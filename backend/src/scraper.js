@@ -3,29 +3,29 @@ import { JSDOM } from 'jsdom'              // HTML parser in Node, provides a br
 
 /**
  * Summary:
- * 1. Receive a search keyword and construct the corresponding Amazon search URL.
- * 2. Perform an HTTP GET request to retrieve the raw HTML of the search results page.
- * 3. Parse the HTML with JSDOM to obtain a `document` object.
- * 4. Select each product card element in the page.
- * 5. For each card, extract the title, rating, review count, and image URL.
- * 6. Filter out any entries without a title and return the final array of products.
+ * 1. Recebe uma palavra-chave e monta a URL de busca na Amazon Brasil.
+ * 2. Baixa o HTML da primeira página de resultados usando Axios.
+ * 3. Converte o HTML em um DOM navegável com JSDOM.
+ * 4. Seleciona cada cartão de produto válido.
+ * 5. Extrai título, preço em reais, avaliação, reviews e imagem.
+ * 6. Remove entradas sem título e devolve o array final de produtos.
  *
- * @param {string} keyword — the search term to query on Amazon
- * @returns {Promise<Array<{ title: string, rating: string, reviews: string, image: string }>>}
+ * @param {string} keyword — termo pesquisado na Amazon
+ * @returns {Promise<Array<{ title: string, price: string|null, rating: string|null, reviews: string|null, image: string|null }>>}
  */
 export async function scrapeResults(keyword) {
   // 1. Build the search URL, encoding special characters (spaces, accents, etc.)
-  const url = `https://www.amazon.com/s?k=${encodeURIComponent(keyword)}`
+  const url = `https://www.amazon.com.br/s?k=${encodeURIComponent(keyword)}`
 
   // 2. Send a GET request to fetch the HTML of the search results page
   //    - User-Agent: simulates a real browser to avoid basic blocking
-  //    - Accept-Language: requests Portuguese-Brazil content, falls back to English
+  //    - Accept-Language: requests Portuguese-Brazil content
   const response = await axios.get(url, {
     headers: {
       'User-Agent':
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ' +
         'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
-      'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8'
+      'Accept-Language': 'pt-BR,pt;q=0.9'
     }
   })
   // response.data now contains the full HTML of the page
@@ -71,10 +71,16 @@ export async function scrapeResults(keyword) {
       const imgEl = item.querySelector('img.s-image')
       const image = imgEl?.src || null
 
+      // 5.5 Price:
+      //     - span.a-offscreen costuma carregar o valor já formatado em reais
+      const priceEl = item.querySelector('.a-price span.a-offscreen')
+      const priceText = priceEl?.textContent.trim() || null
+      const price = priceText
+
       // Return the collected data for this product
-      return { title, rating, reviews, image }
+      return { title, price, rating, reviews, image }
     })
-    // 5.5 Filter out any entries that did not have a valid title
+    // 5.6 Filter out any entries that did not have a valid title
     .filter(product => product.title !== null)
 
   // 6. Return the final array of product objects
